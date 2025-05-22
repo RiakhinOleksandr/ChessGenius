@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="uk-UA">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="index.css">
+        <link rel="website icon" type="png" href="images/site_icon.png">
+        <script type="module" src="scripts/connect.js" defer></script>
+        <title>ChessGenius</title>
+    </head>
+    <body>
+        <div id="wrapper">
+            <h1>Створіть аккаунт</h1>
+            <p id="error-message"></p>
+            <form id="form">
+                <div id="login">
+                    <input required type="text" id="login-input" placeholder="Введіть логін" />
+                </div>
+                <div id="password">
+                    <input required type="password" id="password-input" placeholder="Введіть пароль" />
+                </div>
+                <div id="repeat-password">
+                    <input required type="password" id="repeat-password-input" placeholder="Введіть пароль ще раз" />
+                </div>
+                <button type="submit">Створити</button>
+                <div id="registration">
+                    <p>Вже є аккаунт? <a href="/">Увійти</a></p>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,9 @@
+#top a{
+    color: blue;
+    margin-left: 7%;
+    margin-right: 10%
+}
+
+#connection-button, #registration{
+    align-items: center
+}
