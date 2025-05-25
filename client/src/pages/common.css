@@ -1,0 +1,22 @@
+#top {
+    display: flex;
+    width: 100vw;
+    height: 40px; 
+}
+.link-box {
+    flex: 1;
+    background-color: lightgray;
+    border: 1px solid black;
+    text-decoration: none;
+}
+.link-box:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease-in-out;
+    border-color: blue;
+    cursor: pointer;
+}
+#top p {
+    display: grid;
+    place-items: center;
+    height: 40px; 
+}

@@ -13,7 +13,7 @@
     font-family: "Ancizar Serif", serif;
     font-style: normal;
 }
-#wrapper {
+.wrapper {
     box-sizing: border-box;
     background-color: magenta;
     height: 100vh;
@@ -67,7 +67,7 @@ button {
     text-decoration: underline;
 }
 @media(max-width: 1100px) {
-    #wrapper{
+    .wrapper{
         width: min(400px, 100%);
     }
 }

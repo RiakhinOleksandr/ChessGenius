@@ -6,12 +6,13 @@ export const loginUser = createAsyncThunk(
     async (credentials, thunkAPI) => {
         try {
             const response = await axios.post('/login', credentials);
+            if(response.data.error){
+                return thunkAPI.rejectWithValue({message: response.data.error});
+            }
             return response.data.user; 
         } 
         catch (error) {
-            return thunkAPI.rejectWithValue(
-                error.response?.data || 'Something went wrong'
-            );
+            return thunkAPI.rejectWithValue({message: error.response?.data || 'Something went wrong'});
         }
     }
 );
@@ -21,13 +22,13 @@ export const signUpUser = createAsyncThunk(
     async (credentials, thunkAPI) => {
         try {
             const response = await axios.post('/register', credentials);
-            console.log(response.data)
+            if(response.data.error){
+                return thunkAPI.rejectWithValue({message: response.data.error});
+            }
             return response.data[0]; 
         } 
         catch (error) {
-            return thunkAPI.rejectWithValue(
-                error.response?.data || 'Something went wrong'
-            );
+            return thunkAPI.rejectWithValue({message: error.response?.data || 'Something went wrong'});
         }
     }
 );

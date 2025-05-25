@@ -15,8 +15,8 @@ function SignUp() {
     const [error_msg, setErrorMessage] = useState("")
 
     const dispatch = useDispatch();
-    const isLoggedIn = useSelector((state) => (state.auth.isLoggedIn));
-    const userLogin = useSelector((state) => (state.auth.login));
+    const isLoggedIn = useSelector((state) => (state.user.isLoggedIn));
+    const userLogin = useSelector((state) => (state.user.login));
 
     async function handleSubmit(e){
         e.preventDefault();
@@ -28,9 +28,9 @@ function SignUp() {
             return
         }
         else{
-            const res = await dispatch(signUpUser({login, password})).unwrap();
-            if(res.error){
-                setErrorMessage(res.error);
+            const res = await dispatch(signUpUser({login, password}));
+            if(res.payload.message){
+                setErrorMessage(res.payload.message);
                 setLoginError(true);
                 return;
             }
@@ -89,7 +89,7 @@ function SignUp() {
 
     return (
         <div id="background-picture">
-            <div id="wrapper">
+            <div className="wrapper">
                 <h1>Створіть аккаунт</h1>
                 <p id="error-message">{error_msg}</p>
                 <form method="post" onSubmit={handleSubmit}>

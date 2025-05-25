@@ -1,0 +1,42 @@
+#some-space {
+    height: 30px;
+}
+#center-page{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 580px;
+}
+#chess-board {
+    display: grid;
+    grid-column: 2;
+    grid-template-columns: 10px repeat(8, 70px);
+    grid-template-rows: repeat(8, 70px) 20px;
+    text-align: center;
+    width: 570px;
+    height: 580px;
+}
+.square {
+    width: 70px;
+    height: 70px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.white {
+    background-color: #f0d9b5;
+}
+.black {
+    background-color: #b58863;
+}
+.coord {
+    display: grid;
+    place-items: center;
+}
+div:has(> .figure):hover {
+    cursor: pointer;
+}
+div:has(> .possible-move):hover {
+    cursor: pointer;
+}

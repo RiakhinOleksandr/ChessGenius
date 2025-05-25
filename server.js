@@ -1,5 +1,5 @@
 import express from 'express'; 
-import {getUser, createUser} from "./server/bd.js";
+import {getUser, createUser, getRandomPuzzle } from "./server/bd.js";
 
 const app = express(); 
 const port = process.env.PORT || 4000; 
@@ -22,6 +22,12 @@ app.post('/api/register', async (req, res) => {
     let { login, password } = req.body;
     let rows = await createUser(login, password);
     res.json(rows);
+});
+
+app.post('/api/puzzle', async (req, res) => {
+    let { userId, userRating } = req.body;
+    let puzzle = await getRandomPuzzle(userId, userRating);
+    res.json(puzzle);
 });
 
 app.listen(port, () => {

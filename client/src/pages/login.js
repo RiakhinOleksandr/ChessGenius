@@ -13,8 +13,8 @@ function Login() {
     const [error_msg, setErrorMessage] = useState("")
 
     const dispatch = useDispatch();
-    const isLoggedIn = useSelector((state) => (state.auth.isLoggedIn));
-    const userLogin = useSelector((state) => (state.auth.login));
+    const isLoggedIn = useSelector((state) => (state.user.isLoggedIn));
+    const userLogin = useSelector((state) => (state.user.login));
 
     async function handleSubmit(e){
         e.preventDefault();
@@ -26,12 +26,12 @@ function Login() {
             return
         }
         else{
-            const res = await dispatch(loginUser({login, password})).unwrap();
-                if(res.error){
-                    setErrorMessage(res.error);
-                    setLoginError(true);
-                    return;
-                }         
+            const res = await dispatch(loginUser({login, password}));
+            if(res.payload.message){
+                setErrorMessage(res.payload.message);
+                setLoginError(true);
+                return;
+            }         
         };
     };
 
@@ -66,7 +66,7 @@ function Login() {
 
     return (
         <div id="background-picture">
-            <div id="wrapper">
+            <div className="wrapper">
                 <h1>Увійдіть у аккаунт</h1>
                 <p id="error-message">{error_msg}</p>
                 <form id="form" onSubmit={handleSubmit}>
