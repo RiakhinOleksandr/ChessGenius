@@ -1,5 +1,5 @@
 import {Chess} from "chess.js";
-import {makeMove} from './puzzleSlice.js';
+import {makeMove, makePromotion} from './puzzleSlice.js';
 
 const squareOrderForFEN = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
                            "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
@@ -101,20 +101,42 @@ export function generateChessPosition(FEN, dispatch){
                         square.appendChild(imgSquare);
                         for(let k = 0; k < possibleMoves.length; k++){
                             const possibleMove = possibleMoves[k];
-                            const newSquare = getNewSquare(possibleMove, moveTurn);
+                            const {newSquare, promotion, castle} = getNewSquare(possibleMove, moveTurn);
                             const imgCircle = document.createElement("img");
-                            imgCircle.src = blueCircleUrl;
-                            imgCircle.className = "possible-move";
-                            imgCircle.width = 30;
-                            imgCircle.height = 30;
                             const squarePossible = document.getElementById(newSquare);
-                            squarePossible.appendChild(imgCircle);
-                            if(chess.get(newSquare)){
-                                imgCircle.src = greenCircleUrl;
-                                imgCircle.style.position = "absolute";
-                                imgCircle.style.opacity = 0.8;
+                            if(!promotion){
+                                imgCircle.src = blueCircleUrl;
+                                imgCircle.className = "possible-move";
+                                imgCircle.width = 30;
+                                imgCircle.height = 30;
+                                squarePossible.appendChild(imgCircle);
+                                if(chess.get(newSquare)){
+                                    imgCircle.src = greenCircleUrl;
+                                    imgCircle.style.position = "absolute";
+                                    imgCircle.style.opacity = 0.8;
+                                }
+                                if(!castle){
+                                    squarePossible.onclick = () => dispatch(makeMove(square.id + squarePossible.id));
+                                }
+                                else{
+                                    squarePossible.onclick = () => dispatch(makeMove(possibleMove));
+                                }
                             }
-                            squarePossible.onclick = () => dispatch(makeMove(square.id + squarePossible.id));
+                            else{
+                                if(squarePossible.querySelector('img.possible-move') === null){
+                                    imgCircle.src = blueCircleUrl;
+                                    imgCircle.className = "possible-move";
+                                    imgCircle.width = 30;
+                                    imgCircle.height = 30;
+                                    squarePossible.appendChild(imgCircle);
+                                    if(chess.get(newSquare)){
+                                        imgCircle.src = greenCircleUrl;
+                                        imgCircle.style.position = "absolute";
+                                        imgCircle.style.opacity = 0.8;
+                                    }
+                                    squarePossible.onclick = () => dispatch(makePromotion(square.id + squarePossible.id));
+                                }
+                            }
                         }
                     }
                 }
@@ -175,22 +197,30 @@ function deleteCircles(){
 
 function getNewSquare(move, moveTurn){
     if(move.length === 2){
-        return move;
+        return {newSquare: move, promotion: false, castle: false};
     }
     if(move === "O-O"){
         if(moveTurn === "w"){
-            return "g1";
+            return {newSquare: "g1", promotion: false, castle: true};
         }
         if(moveTurn === "b"){
-            return "g8";
+            return {newSquare: "g8", promotion: false, castle: true};
         }
     }
     else if(move === "O-O-O"){
         if(moveTurn === "w"){
-            return "c1";
+            return {newSquare: "c1", promotion: false, castle: true};
         }
         if(moveTurn === "b"){
-            return "c8";
+            return {newSquare: "c8", promotion: false, castle: true};
+        }
+    }
+    else if(move.includes("=")){
+        if(move[2] === "="){
+            return {newSquare: move.slice(0, 2), promotion: true, castle: false};
+        }
+        else if(move[4] === "="){
+            return {newSquare: move.slice(2, 4), promotion: true, castle: true};
         }
     }
     let newSquare = move.replaceAll("+", "");
@@ -203,10 +233,10 @@ function getNewSquare(move, moveTurn){
     newSquare = newSquare.replaceAll("R", "");
 
     if(newSquare.length === 2){
-        return newSquare;
+        return {newSquare: newSquare, promotion: false};
     }
     else if(newSquare.length === 3){
-        return newSquare.slice(1);
+        return {newSquare: newSquare.slice(1), promotion: false};
     }
 }
 
@@ -228,5 +258,41 @@ export function rotateBoard(){
     for(let i = 0; i < colCoords.length; i++){
         const colCoord = colCoords[i];
         colCoord.innerText = coords[7 - coords.indexOf(colCoord.innerText)];
+    }
+}
+
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function showCorrectAnswer(puzzle, ms, dispatch){
+    clearBoard();
+    const tempChess = new Chess(puzzle.fen);
+    if(puzzle.moves[0].includes("O")){
+        tempChess.move(puzzle.moves[0]);
+    }
+    else if(puzzle.moves[0].length === 4){
+        tempChess.move({from: puzzle.moves[0].slice(0, 2), to: puzzle.moves[0].slice(2, 4)});
+    }
+    else if(puzzle.moves[0].length > 4){
+        tempChess.move({from: puzzle.moves[0].slice(0, 2), to: puzzle.moves[0].slice(2, 4), promotion: puzzle.moves[0][4]});
+    }
+    generateChessPosition(tempChess.fen(), dispatch);
+    staticBoard()
+    for(let i = 1; i < puzzle.moves.length; i++){
+        await sleep(ms);
+        if(puzzle.moves[i].includes("O")){
+            tempChess.move(puzzle.moves[i]);
+        }
+        else if(puzzle.moves[i].length === 4){
+            tempChess.move({from: puzzle.moves[i].slice(0, 2), to: puzzle.moves[i].slice(2, 4)});
+        }
+        else if(puzzle.moves[i].length > 4){
+            tempChess.move({from: puzzle.moves[i].slice(0, 2), to: puzzle.moves[i].slice(2, 4), promotion: puzzle.moves[i][4]});
+        }
+        const FEN = tempChess.fen();
+        clearBoard();
+        generateChessPosition(FEN, dispatch);
+        staticBoard();
     }
 }

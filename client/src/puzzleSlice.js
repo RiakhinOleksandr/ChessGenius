@@ -7,6 +7,7 @@ const initialState = {
     rating: 0,
     moves: [],
     moveMade: false,
+    promotionMade: false,
     userMove: "",
     isWhiteMove: true,
     themes: "",
@@ -32,8 +33,13 @@ export const puzzleSlice = createSlice({
             state.moveMade = true;
             state.userMove = action.payload;
         },
+        makePromotion(state, action) {
+            state.promotionMade = true;
+            state.userMove = action.payload;
+        },
         moveIsMade(state){
             state.moveMade = false;
+            state.promotionMade = false;
             state.userMove = "";
         }
     },
@@ -63,4 +69,4 @@ export const puzzleSlice = createSlice({
     }
 });
 
-export const {resetState, makeMove, moveIsMade} = puzzleSlice.actions;
+export const {resetState, makeMove, makePromotion, moveIsMade} = puzzleSlice.actions;

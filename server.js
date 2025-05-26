@@ -1,5 +1,5 @@
 import express from 'express'; 
-import {getUser, createUser, getRandomPuzzle } from "./server/bd.js";
+import {getUser, createUser, getRandomPuzzle, setPuzzleSolved } from "./server/bd.js";
 
 const app = express(); 
 const port = process.env.PORT || 4000; 
@@ -27,6 +27,12 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/puzzle', async (req, res) => {
     let { userId, userRating } = req.body;
     let puzzle = await getRandomPuzzle(userId, userRating);
+    res.json(puzzle);
+});
+
+app.post('/api/puzzle-solved', async (req, res) => {
+    let { userId, puzzleId, userRating, puzzleRating, solved } = req.body;
+    let puzzle = await setPuzzleSolved(userId, puzzleId, userRating, puzzleRating, solved);
     res.json(puzzle);
 });
 

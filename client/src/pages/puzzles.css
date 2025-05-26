@@ -3,14 +3,50 @@
 }
 #center-page{
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr auto 25px 1fr;
     align-items: center;
     height: 580px;
+}
+#info {
+    display: grid;
+    grid-column: 1;
+    background-color: lightgray;
+    text-align: center;
+    height: 580px;
+}
+#promotion-info {
+    display: grid;
+    grid-column: 4;
+    background-color: lightgray;
+    text-align: center;
+    height: 580px;
+}
+#promotion-images-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+}
+.promotion-image {
+    border: 3px solid black;
+    justify-self: center;
+}
+#cancel-promotion {
+    justify-self: center;
+    width: 125px;
+    height: 30px;
+}
+.promotion-image:hover {
+    cursor: pointer;
+}
+#show-correct-answer {
+    justify-self: center;
+    width: 225px;
+    height: 30px;
 }
 #chess-board {
     display: grid;
     grid-column: 2;
-    grid-template-columns: 10px repeat(8, 70px);
+    grid-template-columns: 15px repeat(8, 70px);
     grid-template-rows: repeat(8, 70px) 20px;
     text-align: center;
     width: 570px;
@@ -39,4 +75,8 @@ div:has(> .figure):hover {
 }
 div:has(> .possible-move):hover {
     cursor: pointer;
+}
+#get-puzzle {
+    display: block;
+    margin: 0 auto;
 }

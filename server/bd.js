@@ -57,8 +57,18 @@ export async function getRandomPuzzle(id, rating){
         [id]),
         client.query(
         "SELECT puzzle_id, fen, moves, rating, themes FROM puzzles WHERE rating BETWEEN $1 AND $2;",
-        [Math.floor(rating - 400), Math.ceil(rating + 400)])
+        [Math.floor(rating - 200), Math.ceil(rating + 200)])
     ]);
+    if(allPossiblePuzzles.rows.length === 0){
+        allPossiblePuzzles = await client.query(
+        "SELECT puzzle_id, fen, moves, rating, themes FROM puzzles WHERE rating BETWEEN $1 AND $2;",
+        [Math.floor(rating - 300), Math.ceil(rating + 300)]);
+    }
+    if(allPossiblePuzzles.rows.length === 0){
+        allPossiblePuzzles = await client.query(
+        "SELECT puzzle_id, fen, moves, rating, themes FROM puzzles WHERE rating BETWEEN $1 AND $2;",
+        [Math.floor(rating - 500), Math.ceil(rating + 500)]);
+    }
     solvedPuzzleIds = solvedPuzzleIds.rows.flatMap(obj => Object.values(obj));
     let allPossiblePuzzlesIds = allPossiblePuzzles.rows.flatMap(obj => Object.values(obj)[0]);
     allPossiblePuzzlesIds = allPossiblePuzzlesIds.filter((item) => !solvedPuzzleIds.includes(item));
@@ -73,22 +83,24 @@ export async function getRandomPuzzle(id, rating){
 }
 
 export async function setPuzzleSolved(userId, puzzleId, userRating, puzzleRating, solved){
-    let e = 1 / (1 + 10^((puzzleRating - userRating) / 400));
+    let e = 1 / (1 + 10**((puzzleRating - userRating) / 400));
     let s = solved ? 1 : 0;
     let k;
     if(userRating > 2500){
-        k = 10;
+        k = 8;
+        e = e * 1.2;
     }
     else if(userRating > 1500){
-        k = 20;
+        k = 16;
     }
     else{
-        k = 40;
+        k = 30;
+        e = e / 1.2;
     }
     let increment = k * (s - e)
     let newUserRating = userRating + increment;
-    if (newUserRating <= 150){
-        newUserRating = 150;
+    if (newUserRating <= 100){
+        newUserRating = 100;
         increment = newUserRating - userRating;
     }
     else if(newUserRating >= 3400){
@@ -96,7 +108,8 @@ export async function setPuzzleSolved(userId, puzzleId, userRating, puzzleRating
         increment = newUserRating - userRating;
     }
     let ins = client.query(
-        "INSERT INTO puzzles_solved (user_id, puzzle_id, solved) VALUES ($1, $2, $3);",
+        "INSERT INTO puzzles_solved (user_id, puzzle_id, solved) VALUES ($1, $2, $3) ON CONFLICT (user_id, puzzle_id)\
+        DO UPDATE SET solved = EXCLUDED.solved;",
         [userId, puzzleId, solved]
     );
     let res = await client.query(

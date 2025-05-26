@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { loginUser, signUpUser } from "./authThunk.js";
+import { solvedPuzzle } from './puzzleThunk.js';
 
 const initialState = {
     isLoggedIn: false,
@@ -23,15 +24,6 @@ export const userSlice = createSlice({
         logOut(state) {
             state.isLoggedIn = false;
             state.login = null;
-        },
-        add_rating(state, action) {
-            state.rating += action.payload;
-        },
-        lose_rating(state, action) {
-            state.rating -= action.payload;
-        },
-        puzzle_solved(state) {
-            state.puzzles_solved += 1;
         },
         new_two_min_record(state, action) {
             state.two_min_record = action.payload;
@@ -90,9 +82,22 @@ export const userSlice = createSlice({
             .addCase(signUpUser.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload.message;
-            })    
+            });
+        builder
+            .addCase(solvedPuzzle.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(solvedPuzzle.fulfilled, (state, action) => {
+                state.status = "done";
+                state.error = null;
+                state.rating = action.payload.puzzle_rating;
+                state.puzzles_solved = action.payload.puzzles_solved;
+            })
+            .addCase(solvedPuzzle.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload.message;
+            })
     }
 });
 
-export const {logOut, add_rating, lose_rating, puzzle_solved, new_two_min_record, 
-    two_min_gamed, new_five_min_record, five_min_gamed } = userSlice.actions;
+export const {logOut, new_two_min_record, two_min_gamed, new_five_min_record, five_min_gamed } = userSlice.actions;
