@@ -29,12 +29,15 @@ function Profile() {
             <div id="profile-container">
                 <div id="profile">
                     <h2>Привіт {user.login}! Тут твоя статистика:</h2>
-                    <p>Твій рейтинг у вирішуванні задач: {Math.round(user.rating)}</p>
-                    <p>Усього вирішено задач: {user.puzzles_solved}</p>
-                    <p>Твій рекорд у бліці із задач: {user.two_min_record}</p>
-                    <p>Усього зіграно бліців із задач: {user.two_min_attempts}</p>
-                    <p>Твій рекорд у серії із задач: {user.five_min_record}</p>
-                    <p>Усього зіграно серій із задач: {user.five_min_attempts}</p>
+                    <ul>
+                        <li><p>Ви з нами з {new Date(user.date).toLocaleDateString()}</p></li>
+                        <li><p>Ваш рейтинг у вирішуванні задач: {Math.round(user.rating)}</p>
+                        <p>Усього вирішено задач: {user.puzzles_solved}</p></li>
+                        <li><p>Ваш рекорд у бліці із задач: {user.two_min_record}</p>
+                        <p>Усього зіграно бліців із задач: {user.two_min_attempts}</p></li>
+                        <li><p>Ваш рекорд у серії із задач: {user.five_min_record}</p>
+                        <p>Усього зіграно серій із задач: {user.five_min_attempts}</p></li>
+                    </ul>
                 </div>
             </div>
         </div>

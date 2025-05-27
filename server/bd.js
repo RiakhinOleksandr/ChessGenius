@@ -150,3 +150,55 @@ export async function blitzPuzzlesPlayed(userId, result){
         return {error: "Щось пішло не так"};
     }
 }
+
+export async function seriesPuzzlesPlayed(userId, result){
+    let res = await client.query(
+        "UPDATE users SET five_min_attempts = five_min_attempts + 1, five_min_record = GREATEST($1, five_min_record) WHERE user_id = $2 RETURNING *;",
+        [result, userId]
+    );
+    if(res.rows.length > 0){
+        return res.rows;
+    }
+    else{
+        return {error: "Щось пішло не так"};
+    }
+}
+
+export async function getBestPuzzleSolvers(n){
+    let res = await client.query(
+        "SELECT login, puzzle_rating FROM users ORDER BY puzzle_rating DESC LIMIT $1;",
+        [n]
+    )
+    if(res.rows.length > 0){
+        return res.rows;
+    }
+    else{
+        return {error: "Щось пішло не так"};
+    }
+}
+
+export async function getBestBlitzPuzzleSolvers(n){
+    let res = await client.query(
+        "SELECT login, two_min_record FROM users ORDER BY two_min_record DESC LIMIT $1;",
+        [n]
+    )
+    if(res.rows.length > 0){
+        return res.rows;
+    }
+    else{
+        return {error: "Щось пішло не так"};
+    }
+}
+
+export async function getBestSeriesPuzzleSolvers(n){
+    let res = await client.query(
+        "SELECT login, five_min_record FROM users ORDER BY five_min_record DESC LIMIT $1;",
+        [n]
+    )
+    if(res.rows.length > 0){
+        return res.rows;
+    }
+    else{
+        return {error: "Щось пішло не так"};
+    }
+}

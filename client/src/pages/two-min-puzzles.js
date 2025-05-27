@@ -47,7 +47,7 @@ function BlitzPuzzles() {
         await dispatch(getPuzzles({startRating, incrementRating, n}));
     }
 
-    function suggestPromotion(puzzle){
+    function suggestPromotion(){
         const picturesHrefForFEN = {
             Q: "/pieces/queen-w.svg", q: "/pieces/queen-b.svg",
             R: "/pieces/rook-w.svg", r: "/pieces/rook-b.svg",

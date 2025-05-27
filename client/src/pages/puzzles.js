@@ -14,6 +14,7 @@ import {resetState, moveIsMade, makeMove} from '../puzzleSlice.js';
 function Puzzles() {
     const user = useSelector((state) => (state.user))
     const puzzle = useSelector((state) => (state.puzzle))
+    
     const [chess, setChess] = useState(null)
     const [halfMoveNum, setHalfMoveNum] = useState(0);
     const [isWhite, setIsWhite] = useState(true);

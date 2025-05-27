@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { loginUser, signUpUser } from "./authThunk.js";
-import { solvedPuzzle, solvedBlitz } from './puzzleThunk.js';
+import { solvedPuzzle, solvedBlitz, solvedSeries } from './puzzleThunk.js';
 
 const initialState = {
     isLoggedIn: false,
     login: null,
     id: -1,
     admin: false,
+    date: null,
     status: "none",
     error: null,
     rating: 1000,
@@ -24,18 +25,6 @@ export const userSlice = createSlice({
         logOut(state) {
             state.isLoggedIn = false;
             state.login = null;
-        },
-        new_two_min_record(state, action) {
-            state.two_min_record = action.payload;
-        },
-        two_min_gamed(state) {
-            state.two_min_attempts += 1;
-        },
-        new_five_min_record(state, action) {
-            state.five_min_record = action.payload;
-        },
-        five_min_gamed(state) {
-            state.five_min_attempts += 1;
         }
     },
     extraReducers: (builder) => {
@@ -50,6 +39,7 @@ export const userSlice = createSlice({
                 state.login = action.payload.login;
                 state.id = action.payload.user_id;
                 state.admin = action.payload.admin;
+                state.date = action.payload.registration_date;
                 state.rating = action.payload.puzzle_rating;
                 state.puzzles_solved = action.payload.puzzles_solved;
                 state.two_min_record = action.payload.two_min_record;
@@ -72,6 +62,7 @@ export const userSlice = createSlice({
                 state.login = action.payload.login;
                 state.id = action.payload.user_id;
                 state.admin = action.payload.admin;
+                state.date = action.payload.registration_date;
                 state.rating = action.payload.puzzle_rating;
                 state.puzzles_solved = action.payload.puzzles_solved;
                 state.two_min_record = action.payload.two_min_record;
@@ -111,7 +102,21 @@ export const userSlice = createSlice({
                 state.status = "rejected";
                 state.error = action.payload.message;
             })
+        builder
+            .addCase(solvedSeries.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(solvedSeries.fulfilled, (state, action) => {
+                state.status = "done";
+                state.error = null;
+                state.five_min_record = action.payload.five_min_record;
+                state.five_min_attempts = action.payload.five_min_attempts;
+            })
+            .addCase(solvedSeries.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload.message;
+            })
     }
 });
 
-export const {logOut, new_two_min_record, two_min_gamed, new_five_min_record, five_min_gamed } = userSlice.actions;
+export const {logOut} = userSlice.actions;

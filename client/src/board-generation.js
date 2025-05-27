@@ -1,6 +1,7 @@
 import {Chess} from "chess.js";
 import {makeMove, makePromotion} from './puzzleSlice.js';
 import {makeMoveForBlitz, makePromotionForBlitz} from './blitzPuzzlesSlice.js';
+import {makeMoveForSeries, makePromotionForSeries} from './seriesPuzzlesSlice.js';
 
 const squareOrderForFEN = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
                            "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
@@ -360,6 +361,88 @@ export function generateChessPositionForBlitz(FEN, dispatch, n){
                                         imgCircle.style.opacity = 0.8;
                                     }
                                     squarePossible.onclick = () => dispatch(makePromotionForBlitz({n: n, userMove: square.id + squarePossible.id}));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            img.src = picturesHrefForFEN[char];
+            img.width = 70;
+            img.height = 70;
+            square.appendChild(img);
+            i += 1;
+        }
+        else if (char >= '0' && char <= '9') {
+            i += parseInt(char);
+        }
+    }
+
+    return chess;
+}
+
+export function generateChessPositionForSeries(FEN, dispatch, n){
+    const [position, moveTurn, castlingPossible, enPassantTarget, halfMoveClock, moveNumber] = FEN.split(" ");
+
+    const chess = new Chess(FEN);
+
+    let i = 0;
+    for(let j = 0; j < position.length; j++){
+        const char = position[j];
+        if(char in picturesHrefForFEN){
+            const squareCoord = squareOrderForFEN[i];
+            const square = document.getElementById(squareCoord);
+            const img = document.createElement("img");
+            img.className = "figure";
+            const possibleMoves = chess.moves({square : squareCoord});
+            if(possibleMoves){
+                if(chess.get(squareCoord).color === moveTurn){
+                    img.onclick = () => {
+                        deleteCircles();
+                        const imgSquare = document.createElement("img");
+                        imgSquare.src = blueSquareUrl;
+                        imgSquare.id = "selected-square";
+                        imgSquare.style.position = "absolute";
+                        imgSquare.style.opacity = 0.4;
+                        imgSquare.width = 70;
+                        imgSquare.height = 70;
+                        square.appendChild(imgSquare);
+                        for(let k = 0; k < possibleMoves.length; k++){
+                            const possibleMove = possibleMoves[k];
+                            const {newSquare, promotion, castle} = getNewSquare(possibleMove, moveTurn);
+                            const imgCircle = document.createElement("img");
+                            const squarePossible = document.getElementById(newSquare);
+                            if(!promotion){
+                                imgCircle.src = blueCircleUrl;
+                                imgCircle.className = "possible-move";
+                                imgCircle.width = 30;
+                                imgCircle.height = 30;
+                                squarePossible.appendChild(imgCircle);
+                                if(chess.get(newSquare)){
+                                    imgCircle.src = greenCircleUrl;
+                                    imgCircle.style.position = "absolute";
+                                    imgCircle.style.opacity = 0.8;
+                                }
+                                if(!castle){
+                                    squarePossible.onclick = () => dispatch(makeMoveForSeries({n: n, userMove: square.id + squarePossible.id}));
+                                }
+                                else{
+                                    squarePossible.onclick = () => dispatch(makeMoveForSeries({n: n, userMove: possibleMove}));
+                                }
+                            }
+                            else{
+                                if(squarePossible.querySelector('img.possible-move') === null){
+                                    imgCircle.src = blueCircleUrl;
+                                    imgCircle.className = "possible-move";
+                                    imgCircle.width = 30;
+                                    imgCircle.height = 30;
+                                    squarePossible.appendChild(imgCircle);
+                                    if(chess.get(newSquare)){
+                                        imgCircle.src = greenCircleUrl;
+                                        imgCircle.style.position = "absolute";
+                                        imgCircle.style.opacity = 0.8;
+                                    }
+                                    squarePossible.onclick = () => dispatch(makePromotionForSeries({n: n, userMove: square.id + squarePossible.id}));
                                 }
                             }
                         }

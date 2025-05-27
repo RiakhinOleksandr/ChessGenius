@@ -64,3 +64,35 @@ export const solvedBlitz = createAsyncThunk(
         }
     }
 );
+
+export const getPuzzlesForSeries = createAsyncThunk(
+    'puzzle/getSeriesPuzzles',
+    async (credentials, thunkAPI) => {
+        try {
+            const response = await axios.post('/puzzles', credentials);
+            if(response.data.error){
+                return thunkAPI.rejectWithValue({message: response.data.error});
+            }
+            return response.data; 
+        } 
+        catch (error) {
+            return thunkAPI.rejectWithValue({message: error.response?.data || 'Something went wrong'});
+        }
+    }
+);
+
+export const solvedSeries = createAsyncThunk(
+    'puzzle/setSeriesSolved',
+    async (credentials, thunkAPI) => {
+        try {
+            const response = await axios.post('/series-solved', credentials);
+            if(response.data.error){
+                return thunkAPI.rejectWithValue({message: response.data.error});
+            }
+            return response.data[0]; 
+        } 
+        catch (error) {
+            return thunkAPI.rejectWithValue({message: error.response?.data || 'Something went wrong'});
+        }
+    }
+);

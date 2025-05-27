@@ -1,5 +1,6 @@
 import express from 'express'; 
-import {getUser, createUser, getRandomPuzzle, setPuzzleSolved, getRandomPuzzles, blitzPuzzlesPlayed } from "./server/bd.js";
+import {getUser, createUser, getRandomPuzzle, setPuzzleSolved, getRandomPuzzles, blitzPuzzlesPlayed, 
+    seriesPuzzlesPlayed, getBestPuzzleSolvers, getBestBlitzPuzzleSolvers, getBestSeriesPuzzleSolvers } from "./server/bd.js";
 
 const app = express(); 
 const port = process.env.PORT || 4000; 
@@ -45,6 +46,30 @@ app.post('/api/puzzles', async (req, res) => {
 app.post('/api/blitz-solved', async (req, res) => {
     let { userId, result } = req.body;
     let puzzle = await blitzPuzzlesPlayed(userId, result);
+    res.json(puzzle);
+});
+
+app.post('/api/series-solved', async (req, res) => {
+    let { userId, result } = req.body;
+    let puzzle = await seriesPuzzlesPlayed(userId, result);
+    res.json(puzzle);
+});
+
+app.post('/api/best-puzzle', async (req, res) => {
+    let { n } = req.body;
+    let puzzle = await getBestPuzzleSolvers(n);
+    res.json(puzzle);
+});
+
+app.post('/api/best-blitz', async (req, res) => {
+    let { n } = req.body;
+    let puzzle = await getBestBlitzPuzzleSolvers(n);
+    res.json(puzzle);
+});
+
+app.post('/api/best-series', async (req, res) => {
+    let { n } = req.body;
+    let puzzle = await getBestSeriesPuzzleSolvers(n);
     res.json(puzzle);
 });
 
