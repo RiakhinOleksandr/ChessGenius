@@ -59,12 +59,12 @@ export async function getRandomPuzzle(id, rating){
         "SELECT puzzle_id, fen, moves, rating, themes FROM puzzles WHERE rating BETWEEN $1 AND $2;",
         [Math.floor(rating - 200), Math.ceil(rating + 200)])
     ]);
-    if(allPossiblePuzzles.rows.length === 0){
+    if(allPossiblePuzzles.rows.length < 50){
         allPossiblePuzzles = await client.query(
         "SELECT puzzle_id, fen, moves, rating, themes FROM puzzles WHERE rating BETWEEN $1 AND $2;",
         [Math.floor(rating - 300), Math.ceil(rating + 300)]);
     }
-    if(allPossiblePuzzles.rows.length === 0){
+    if(allPossiblePuzzles.rows.length < 50){
         allPossiblePuzzles = await client.query(
         "SELECT puzzle_id, fen, moves, rating, themes FROM puzzles WHERE rating BETWEEN $1 AND $2;",
         [Math.floor(rating - 500), Math.ceil(rating + 500)]);
@@ -115,6 +115,33 @@ export async function setPuzzleSolved(userId, puzzleId, userRating, puzzleRating
     let res = await client.query(
         "UPDATE users SET puzzle_rating = puzzle_rating + $1, puzzles_solved = puzzles_solved + 1 WHERE user_id = $2 RETURNING *;",
         [increment, userId]
+    );
+    if(res.rows.length > 0){
+        return res.rows;
+    }
+    else{
+        return {error: "Щось пішло не так"};
+    }
+}
+
+export async function getRandomPuzzles(startRaring, incrementRating, n){
+    const ratingMedians = [];
+    for(let i = 0; i < n; i++){
+        ratingMedians.push(startRaring + 2*i*incrementRating);
+    }
+    const queries = ratingMedians.map(rat => client.query("SELECT puzzle_id, fen, moves, rating FROM puzzles\
+        WHERE rating BETWEEN $1 AND $2 ORDER BY RANDOM() LIMIT 1;",
+        [rat - incrementRating, rat + incrementRating]
+    ));
+    const results = await Promise.all(queries);
+    const rows = results.map(result => result.rows);
+    return rows;
+}
+
+export async function blitzPuzzlesPlayed(userId, result){
+    let res = await client.query(
+        "UPDATE users SET two_min_attempts = two_min_attempts + 1, two_min_record = GREATEST($1, two_min_record) WHERE user_id = $2 RETURNING *;",
+        [result, userId]
     );
     if(res.rows.length > 0){
         return res.rows;

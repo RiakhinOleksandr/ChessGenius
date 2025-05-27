@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import MainPage from './pages/main-page';
 import Puzzles from './pages/puzzles';
+import BlitzPuzzles from './pages/two-min-puzzles'
 import Profile from "./pages/profile";
 import Login from './pages/login';
 import SignUp from './pages/sign-up';
@@ -20,6 +20,7 @@ function App() {
                 <Route element={<ProtectedRoute isLoggedIn={isLoggedIn} />}>
                     <Route path="/" element={<MainPage />} />
                     <Route path="/puzzles" element={<Puzzles />} />
+                    <Route path="/blitz-puzzles" element={<BlitzPuzzles />} />
                     <Route path="/profile" element={<Profile />} />
                 </Route>
                 <Route path="/login" element={<Login />} />

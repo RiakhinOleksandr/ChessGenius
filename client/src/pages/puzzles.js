@@ -254,7 +254,7 @@ function Puzzles() {
                     </div>
                 </Link>
             </div>
-            <div id="some-space"></div>
+            <div className="some-space"></div>
             <div id="center-page">
                 <div id="info">
                     <p>Ваш рейтинг: {Math.round(user.rating)}</p>
@@ -275,7 +275,7 @@ function Puzzles() {
                 <div id="chess-board"></div>
                 <div id="promotion-info"></div>
             </div>
-            <div id="some-space"></div>
+            <div className="some-space"></div>
             <button type="button" id="get-puzzle" onClick={getPuzzleToSolve} disabled={puzzleIsLoading}>Отримати задачу</button>
         </div>
     );

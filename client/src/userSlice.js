@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { loginUser, signUpUser } from "./authThunk.js";
-import { solvedPuzzle } from './puzzleThunk.js';
+import { solvedPuzzle, solvedBlitz } from './puzzleThunk.js';
 
 const initialState = {
     isLoggedIn: false,
@@ -94,6 +94,20 @@ export const userSlice = createSlice({
                 state.puzzles_solved = action.payload.puzzles_solved;
             })
             .addCase(solvedPuzzle.rejected, (state, action) => {
+                state.status = "rejected";
+                state.error = action.payload.message;
+            });
+        builder
+            .addCase(solvedBlitz.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(solvedBlitz.fulfilled, (state, action) => {
+                state.status = "done";
+                state.error = null;
+                state.two_min_record = action.payload.two_min_record;
+                state.two_min_attempts = action.payload.two_min_attempts;
+            })
+            .addCase(solvedBlitz.rejected, (state, action) => {
                 state.status = "rejected";
                 state.error = action.payload.message;
             })

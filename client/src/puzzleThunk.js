@@ -25,7 +25,38 @@ export const solvedPuzzle = createAsyncThunk(
             if(response.data.error){
                 return thunkAPI.rejectWithValue({message: response.data.error});
             }
-            console.log(response.data[0])
+            return response.data[0]; 
+        } 
+        catch (error) {
+            return thunkAPI.rejectWithValue({message: error.response?.data || 'Something went wrong'});
+        }
+    }
+);
+
+export const getPuzzles = createAsyncThunk(
+    'puzzle/getPuzzles',
+    async (credentials, thunkAPI) => {
+        try {
+            const response = await axios.post('/puzzles', credentials);
+            if(response.data.error){
+                return thunkAPI.rejectWithValue({message: response.data.error});
+            }
+            return response.data; 
+        } 
+        catch (error) {
+            return thunkAPI.rejectWithValue({message: error.response?.data || 'Something went wrong'});
+        }
+    }
+);
+
+export const solvedBlitz = createAsyncThunk(
+    'puzzle/setBlitzSolved',
+    async (credentials, thunkAPI) => {
+        try {
+            const response = await axios.post('/blitz-solved', credentials);
+            if(response.data.error){
+                return thunkAPI.rejectWithValue({message: response.data.error});
+            }
             return response.data[0]; 
         } 
         catch (error) {

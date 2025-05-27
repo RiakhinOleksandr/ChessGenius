@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import {logOut} from '../userSlice.js';
-import {resetState} from '../puzzleSlice.js';
+import { resetState } from '../puzzleSlice.js';
+import { resetBlitzState } from '../blitzPuzzlesSlice.js';
 
 export function logOutUser(dispatch, navigate){
     dispatch(logOut());
     dispatch(resetState());
+    dispatch(resetBlitzState());
     navigate("/login");
 }
 
@@ -23,7 +25,7 @@ function MainPage() {
                         <p>Задачі</p>
                     </div>
                 </Link>
-                <Link to="/two-min-puzzles" className="link-box">
+                <Link to="/blitz-puzzles" className="link-box">
                     <div className="two-min-puzzle-link">
                         <p>Бліц із задач</p>
                     </div>

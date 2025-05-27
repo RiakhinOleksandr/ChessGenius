@@ -1,4 +1,5 @@
 import './common.css';
+import './profile.css'
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
@@ -24,15 +25,18 @@ function Profile() {
                     </div>
                 </Link>
             </div>
-            <h1>Тут буде профіль користувача</h1>
-            <p>{user.login}</p>
-            <p>{user.admin ? "admin" : "user"}</p>
-            <p>{user.rating}</p>
-            <p>{user.puzzles_solved}</p>
-            <p>{user.two_min_record}</p>
-            <p>{user.two_min_attempts}</p>
-            <p>{user.five_min_record}</p>
-            <p>{user.five_min_attempts}</p>
+            <div className="some-space"></div>
+            <div id="profile-container">
+                <div id="profile">
+                    <h2>Привіт {user.login}! Тут твоя статистика:</h2>
+                    <p>Твій рейтинг у вирішуванні задач: {Math.round(user.rating)}</p>
+                    <p>Усього вирішено задач: {user.puzzles_solved}</p>
+                    <p>Твій рекорд у бліці із задач: {user.two_min_record}</p>
+                    <p>Усього зіграно бліців із задач: {user.two_min_attempts}</p>
+                    <p>Твій рекорд у серії із задач: {user.five_min_record}</p>
+                    <p>Усього зіграно серій із задач: {user.five_min_attempts}</p>
+                </div>
+            </div>
         </div>
     );
 }
