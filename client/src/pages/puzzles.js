@@ -194,7 +194,7 @@ function Puzzles() {
                 tempChess.move(puzzle.moves[halfMoveNum]);
             }
             else if(puzzle.moves[halfMoveNum].length > 4){
-                chess.move({from: puzzle.moves[halfMoveNum].slice(0, 2), to: puzzle.moves[halfMoveNum].slice(2, 4), 
+                tempChess.move({from: puzzle.moves[halfMoveNum].slice(0, 2), to: puzzle.moves[halfMoveNum].slice(2, 4), 
                     promotion: puzzle.moves[halfMoveNum][4]});
                 }
             else{

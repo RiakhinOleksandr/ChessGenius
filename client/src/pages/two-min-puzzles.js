@@ -203,7 +203,7 @@ function BlitzPuzzles() {
                     tempChess.move(puzzles.puzzles[n][0].moves[halfMoveNum]);
                 }
                 else if(puzzles.puzzles[n][0].moves[halfMoveNum].length > 4){
-                    chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum].slice(2, 4), 
+                    tempChess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum].slice(2, 4), 
                         promotion: puzzles.puzzles[n][0].moves[halfMoveNum][4]});
                     }
                 else{
