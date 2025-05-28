@@ -11,10 +11,13 @@ import { generateChessBoard, generateChessPositionForBlitz, rotateBoard, clearBo
     staticBoard} from '../board-generation';
 import { getPuzzles, solvedBlitz } from '../puzzleThunk';
 import { resetBlitzState, makeMoveForBlitz, moveIsMadeForBlitz } from '../blitzPuzzlesSlice.js';
+import { blockNavigation, unblockNavigation } from '../navigationBlockSlice.js';
 
 function BlitzPuzzles() {
     const user = useSelector((state) => (state.user));
     const puzzles = useSelector((state) => (state.puzzles));
+    const navigationBlocked = useSelector((state) => (state.navigation.navigationBlocked));
+
     const [chess, setChess] = useState(null);
     const [halfMoveNum, setHalfMoveNum] = useState(0);
     const [isWhite, setIsWhite] = useState(true);
@@ -121,6 +124,12 @@ function BlitzPuzzles() {
         const m = String(Math.floor(seconds / 60)).padStart(2, '0');
         const s = String(seconds % 60).padStart(2, '0');
         return `${m}:${s}`;
+    }
+
+    function handleNavigation(e){
+        if(navigationBlocked) {
+            e.preventDefault();
+        }
     }
 
     useEffect(() => generateChessBoard(true), []);
@@ -274,17 +283,23 @@ function BlitzPuzzles() {
     return (
         <div>
             <div id="top">
-                <Link to="/" className="link-box">
+                <Link to="/" className="link-box" onClick={handleNavigation}>
                     <div className="main-link">
                         <p>На головну</p>
                     </div>
                 </Link>
-                <Link to="/profile" className="link-box">
+                <Link to="/profile" className="link-box" onClick={handleNavigation}>
                     <div className="profile-link">
                         <p>Профіль</p>
                     </div>
                 </Link>
-                <Link to="/login" className="link-box" onClick={() => logOutUser(dispatch, navigate)}>
+                <Link to="/login" className="link-box" onClick={(e) => {
+                    if(navigationBlocked){
+                        e.preventDefault();
+                    } else{
+                        logOutUser(dispatch, navigate);
+                    }}
+                }>
                     <div className="logout-link">
                         <p>Вийти</p>
                     </div>
@@ -309,24 +324,29 @@ function BlitzPuzzles() {
             </div>
             <div className="some-space"></div>
             <button type="button" id="get-puzzle" onClick={async () => {
-                const textDisplay = document.getElementById("timer");
-                const recordMsg = document.getElementById("new-record");
-                recordMsg.innerText = "";
-                textDisplay.innerText = "";
-                await getPuzzlesToSolve(800, 20, 45);
-                setGameIsOver(false);
-                setPuzzlesSolved(0);
-                setMistakesMade(0)
-                let timeLeft = 120
-                intervalRef.current = setInterval(() => {
-                    textDisplay.innerText = "У вас залишилось " + formatTime(timeLeft) + " часу."
-                    if (timeLeft <= 0){
-                        textDisplay.innerText = "Час вийшов!"
-                        setGameIsOver(true);
-                        clearInterval(intervalRef.current);
-                    }
-                    timeLeft = timeLeft - 1;
-                }, 1000)}
+                try{
+                    dispatch(blockNavigation());
+                    const textDisplay = document.getElementById("timer");
+                    const recordMsg = document.getElementById("new-record");
+                    recordMsg.innerText = "";
+                    textDisplay.innerText = "";
+                    await getPuzzlesToSolve(800, 20, 45);
+                    setGameIsOver(false);
+                    setPuzzlesSolved(0);
+                    setMistakesMade(0)
+                    let timeLeft = 120
+                    intervalRef.current = setInterval(() => {
+                        textDisplay.innerText = "У вас залишилось " + formatTime(timeLeft) + " часу."
+                        if (timeLeft <= 0){
+                            textDisplay.innerText = "Час вийшов!"
+                            setGameIsOver(true);
+                            clearInterval(intervalRef.current);
+                        }
+                        timeLeft = timeLeft - 1;
+                    }, 1000)
+                } finally {
+                    dispatch(unblockNavigation());
+                }}
             } disabled={blitzIsPlayed}>Отримати серію задач</button>
         </div>
     );

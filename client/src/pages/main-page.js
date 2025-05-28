@@ -10,8 +10,8 @@ import { resetBlitzState } from '../blitzPuzzlesSlice.js';
 import { resetSeriesState } from '../seriesPuzzlesSlice.js';
 import { bestInBlitz, bestInPuzzle, bestInSeries } from '../bestUsersThunk.js';
 
-export function logOutUser(dispatch, navigate){
-    dispatch(logOut());
+export async function logOutUser(dispatch, navigate){
+    await dispatch(logOut());
     dispatch(resetState());
     dispatch(resetBlitzState());
     dispatch(resetSeriesState());
@@ -44,7 +44,7 @@ function MainPage() {
                 const player = bestPuzzle[i];
                 const row = document.createElement("tr");
                 if(player.login === userName){
-                    row.innerHTML = `<td>${i + 1}</td><td><b>${player.login}</b></td><td>${Math.floor(player.puzzle_rating)}</td>`;
+                    row.innerHTML = `<td>${i + 1}</td><td><b>${player.login}</b></td><td><b>${Math.floor(player.puzzle_rating)}</b></td>`;
                 }
                 else{
                     row.innerHTML = `<td>${i + 1}</td><td>${player.login}</td><td>${Math.floor(player.puzzle_rating)}</td>`;
@@ -61,7 +61,7 @@ function MainPage() {
                 const player = bestBlitz[i];
                 const row = document.createElement("tr");
                 if(player.login === userName){
-                    row.innerHTML = `<td>${i + 1}</td><td><b>${player.login}</b></td><td>${player.two_min_record}</td>`;
+                    row.innerHTML = `<td>${i + 1}</td><td><b>${player.login}</b></td><td><b>${player.two_min_record}</b></td>`;
                 }
                 else{
                     row.innerHTML = `<td>${i + 1}</td><td>${player.login}</td><td>${Math.floor(player.two_min_record)}</td>`;
@@ -78,7 +78,7 @@ function MainPage() {
                 const player = bestSeries[i];
                 const row = document.createElement("tr");
                 if(player.login === userName){
-                    row.innerHTML = `<td>${i + 1}</td><td><b>${player.login}</b></td><td>${player.five_min_record}</td>`;
+                    row.innerHTML = `<td>${i + 1}</td><td><b>${player.login}</b></td><td><b>${player.five_min_record}</b></td>`;
                 }
                 else{
                     row.innerHTML = `<td>${i + 1}</td><td>${player.login}</td><td>${Math.floor(player.five_min_record)}</td>`;

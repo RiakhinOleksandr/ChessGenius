@@ -9,11 +9,13 @@ import { Chess } from "chess.js";
 import { generateChessBoard, generateChessPosition, rotateBoard, clearBoard,
     staticBoard, showCorrectAnswer} from '../board-generation';
 import { getPuzzle, solvedPuzzle } from '../puzzleThunk';
-import {resetState, moveIsMade, makeMove} from '../puzzleSlice.js';
+import { resetState, moveIsMade, makeMove } from '../puzzleSlice.js';
+import { blockNavigation, unblockNavigation } from '../navigationBlockSlice.js';
 
 function Puzzles() {
-    const user = useSelector((state) => (state.user))
-    const puzzle = useSelector((state) => (state.puzzle))
+    const user = useSelector((state) => (state.user));
+    const puzzle = useSelector((state) => (state.puzzle));
+    const navigationBlocked = useSelector((state) => (state.navigation.navigationBlocked));
     
     const [chess, setChess] = useState(null)
     const [halfMoveNum, setHalfMoveNum] = useState(0);
@@ -113,6 +115,12 @@ function Puzzles() {
             emptySpace.innerHTML = "";
         }
         emptySpace.appendChild(cancelBtn);
+    }
+
+    function handleNavigation(e){
+        if(navigationBlocked) {
+            e.preventDefault();
+        }
     }
 
     useEffect(() => generateChessBoard(true), []);
@@ -239,17 +247,23 @@ function Puzzles() {
     return (
         <div>
             <div id="top">
-                <Link to="/" className="link-box">
+                <Link to="/" className="link-box" onClick={handleNavigation}>
                     <div className="main-link">
                         <p>На головну</p>
                     </div>
                 </Link>
-                <Link to="/profile" className="link-box">
+                <Link to="/profile" className="link-box" onClick={handleNavigation}>
                     <div className="profile-link">
                         <p>Профіль</p>
                     </div>
                 </Link>
-                <Link to="/login" className="link-box" onClick={() => logOutUser(dispatch, navigate)}>
+                <Link to="/login" className="link-box" onClick={(e) => {
+                    if(navigationBlocked){
+                        e.preventDefault();
+                    } else{
+                        logOutUser(dispatch, navigate);
+                    }}
+                }>
                     <div className="logout-link">
                         <p>Вийти</p>
                     </div>
@@ -277,7 +291,14 @@ function Puzzles() {
                 <div id="promotion-info"></div>
             </div>
             <div className="some-space"></div>
-            <button type="button" id="get-puzzle" onClick={getPuzzleToSolve} disabled={puzzleIsLoading}>Отримати задачу</button>
+            <button type="button" id="get-puzzle" onClick={async () => {
+                try{
+                    dispatch(blockNavigation());
+                    await getPuzzleToSolve();
+                } finally{
+                    dispatch(unblockNavigation());
+                }}
+            } disabled={puzzleIsLoading}>Отримати задачу</button>
         </div>
     );
 }

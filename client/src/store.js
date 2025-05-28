@@ -4,6 +4,7 @@ import { puzzleSlice } from './puzzleSlice.js';
 import { blitzPuzzlesSlice } from './blitzPuzzlesSlice.js';
 import { seriesPuzzlesSlice } from './seriesPuzzlesSlice.js';
 import { bestUsers } from './bestSlice.js';
+import { navigationSlice } from './navigationBlockSlice.js';
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         puzzle: puzzleSlice.reducer,
         puzzles: blitzPuzzlesSlice.reducer,
         seriesPuzzles: seriesPuzzlesSlice.reducer,
-        bestUsers: bestUsers.reducer
+        bestUsers: bestUsers.reducer,
+        navigation: navigationSlice.reducer
     }
 });
