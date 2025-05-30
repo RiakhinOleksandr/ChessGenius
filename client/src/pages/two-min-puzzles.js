@@ -30,6 +30,7 @@ function BlitzPuzzles() {
     const [gameIsOver, setGameIsOver] = useState(false);
     const [puzzleLoaded, setPuzzleLoaded] = useState(null);
     const [suggestingPromotion, setSuggestingPromotion] = useState(null);
+    const [moves, setMoves] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -132,22 +133,40 @@ function BlitzPuzzles() {
         }
     }
 
-    useEffect(() => generateChessBoard(true), []);
+    function addNotationMove(san, color){
+        if(color === "w"){
+            moves.push({white: san, black: ""});
+        } 
+        else if(color === "b"){
+            if(moves.length === 0){
+                moves.push({white: "", black: san});
+            }
+            else{
+                moves[moves.length - 1].black = san;
+            }
+        }
+    }
+
+    useEffect(() => {
+        generateChessBoard(true);
+    }, []);
     useEffect(() => {
         let n = puzzlesSolved + mistakesMade;
         if(puzzles.puzzles.length > 1){
             if(puzzles.puzzles[n][0].moveMade){
                 if(puzzles.puzzles[n][0].userMove === puzzles.puzzles[n][0].moves[halfMoveNum]){
+                    let move;
                     if(puzzles.puzzles[n][0].moves[halfMoveNum].includes("O")){
-                        chess.move(puzzles.puzzles[n][0].moves[halfMoveNum]);
+                        move = chess.move(puzzles.puzzles[n][0].moves[halfMoveNum]);
                     }
                     else if(puzzles.puzzles[n][0].moves[halfMoveNum].length > 4){
-                        chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum].slice(2, 4), 
+                        move = chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum].slice(2, 4), 
                             promotion: puzzles.puzzles[n][0].moves[halfMoveNum][4]});
                     }
                     else{
-                        chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum].slice(2, 4)});
+                        move = chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum].slice(2, 4)});
                     }
+                    addNotationMove(move.san, move.color);
                     staticBoard();
                     clearBoard();
                     setChess(generateChessPositionForBlitz(chess.fen(), dispatch, n));
@@ -156,15 +175,16 @@ function BlitzPuzzles() {
                     }
                     else{
                         if(puzzles.puzzles[n][0].moves[halfMoveNum + 1].includes("O")){
-                            chess.move(puzzles.puzzles[n][0].moves[halfMoveNum + 1]);
+                            move = chess.move(puzzles.puzzles[n][0].moves[halfMoveNum + 1]);
                         }
                         else if(puzzles.puzzles[n][0].moves[halfMoveNum + 1].length > 4){
-                            chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(2, 4), 
+                            move = chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(2, 4), 
                                 promotion: puzzles.puzzles[n][0].moves[halfMoveNum + 1][4]});
                         }
                         else{
-                            chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(2, 4)});
+                            move = chess.move({from: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(0, 2), to: puzzles.puzzles[n][0].moves[halfMoveNum + 1].slice(2, 4)});
                         }
+                        addNotationMove(move.san, move.color);
                         setHalfMoveNum(halfMoveNum + 2);
                         staticBoard();
                         clearBoard();
@@ -197,6 +217,7 @@ function BlitzPuzzles() {
                     rotateBoard();
                     setIsWhite(!puzzles.puzzles[n][0].isWhiteMove);
                 }
+                setMoves([]);
                 const tempChess = new Chess(puzzles.puzzles[n][0].fen);
                 setChess(generateChessPositionForBlitz(puzzles.puzzles[n][0].fen, dispatch, n))
                 if(puzzles.puzzles[n][0].moves[halfMoveNum].includes("O")){
@@ -277,6 +298,7 @@ function BlitzPuzzles() {
             setMistakesMade(0);
             setSuggestingPromotion(null);
             clearInterval(intervalRef.current);
+            setMoves([]);
         }
     }, [dispatch]);
 
@@ -320,6 +342,34 @@ function BlitzPuzzles() {
                     <p id="about-button">Натисніть на кнопку знизу, щоб розпочати</p>
                 </div>
                 <div id="chess-board"></div>
+                <div id="notation-puzzles">
+                    <div className="notation-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Білі</th>
+                                    <th>Чорні</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {moves.map((move, index) => {
+                                const isFirstMove = index === 0;
+                                const whiteMove = move.white || (isFirstMove && move.black ? '...' : '');
+                                const blackMove = move.black || '';
+
+                                return (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{whiteMove}</td>
+                                        <td>{blackMove}</td>
+                                    </tr>
+                                );
+                            })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <div id="promotion-info"></div>
             </div>
             <div className="some-space"></div>

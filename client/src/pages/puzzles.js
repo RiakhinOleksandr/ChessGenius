@@ -25,6 +25,7 @@ function Puzzles() {
     const [puzzleIsLoading, setPuzzleIsLoading] = useState(false);
     const [puzzleLoaded, setPuzzleLoaded] = useState(null);
     const [suggestingPromotion, setSuggestingPromotion] = useState(null);
+    const [moves, setMoves] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -55,7 +56,7 @@ function Puzzles() {
             B: "/pieces/bishop-w.svg", b: "/pieces/bishop-b.svg",
             N: "/pieces/knight-w.svg", n: "/pieces/knight-b.svg"
         }
-        const emptySpace = document.getElementById("promotion-info");
+        const emptySpace = document.getElementById("promotion-info-puzzles");
         const text = document.createElement("p");
         text.innerText = "Виберіть фігуру для перетворення: ";
         const imagesBlock1 = document.createElement("div");
@@ -75,10 +76,10 @@ function Puzzles() {
                 figure2.src = picturesHrefForFEN[figures2[i]];
                 figure1.className = "promotion-image";
                 figure2.className = "promotion-image";
-                figure1.width = 100;
-                figure2.width = 100;
-                figure1.height = 100;
-                figure2.height = 100;
+                figure1.width = 80;
+                figure2.width = 80;
+                figure1.height = 80;
+                figure2.height = 80;
                 figure1.onclick = () => setSuggestingPromotion(figures1[i]);
                 figure2.onclick = () => setSuggestingPromotion(figures2[i]);
                 imagesBlock1.appendChild(figure1);
@@ -123,20 +124,38 @@ function Puzzles() {
         }
     }
 
-    useEffect(() => generateChessBoard(true), []);
+    function addNotationMove(san, color){
+        if(color === "w"){
+            moves.push({white: san, black: ""});
+        } 
+        else if(color === "b"){
+            if(moves.length === 0){
+                moves.push({white: "", black: san});
+            }
+            else{
+                moves[moves.length - 1].black = san;
+            }
+        }
+    }
+
+    useEffect(() => {
+        generateChessBoard(true);
+    }, []);
     useEffect(() => {
         if(puzzle.moveMade){
             if(puzzle.userMove === puzzle.moves[halfMoveNum]){
+                let move;
                 if(puzzle.moves[halfMoveNum].includes("O")){
-                    chess.move(puzzle.moves[halfMoveNum]);
+                    move = chess.move(puzzle.moves[halfMoveNum]);
                 }
                 else if(puzzle.moves[halfMoveNum].length > 4){
-                    chess.move({from: puzzle.moves[halfMoveNum].slice(0, 2), to: puzzle.moves[halfMoveNum].slice(2, 4), 
+                    move = chess.move({from: puzzle.moves[halfMoveNum].slice(0, 2), to: puzzle.moves[halfMoveNum].slice(2, 4), 
                         promotion: puzzle.moves[halfMoveNum][4]});
                 }
                 else{
-                    chess.move({from: puzzle.moves[halfMoveNum].slice(0, 2), to: puzzle.moves[halfMoveNum].slice(2, 4)});
+                    move = chess.move({from: puzzle.moves[halfMoveNum].slice(0, 2), to: puzzle.moves[halfMoveNum].slice(2, 4)});
                 }
+                addNotationMove(move.san, move.color);
                 staticBoard();
                 clearBoard();
                 setChess(generateChessPosition(chess.fen(), dispatch));
@@ -145,15 +164,16 @@ function Puzzles() {
                 }
                 else{
                     if(puzzle.moves[halfMoveNum + 1].includes("O")){
-                        chess.move(puzzle.moves[halfMoveNum + 1]);
+                        move = chess.move(puzzle.moves[halfMoveNum + 1]);
                     }
                     else if(puzzle.moves[halfMoveNum + 1].length > 4){
-                        chess.move({from: puzzle.moves[halfMoveNum + 1].slice(0, 2), to: puzzle.moves[halfMoveNum + 1].slice(2, 4), 
+                        move = chess.move({from: puzzle.moves[halfMoveNum + 1].slice(0, 2), to: puzzle.moves[halfMoveNum + 1].slice(2, 4), 
                             promotion: puzzle.moves[halfMoveNum + 1][4]});
                     }
                     else{
-                        chess.move({from: puzzle.moves[halfMoveNum + 1].slice(0, 2), to: puzzle.moves[halfMoveNum + 1].slice(2, 4)});
+                        move = chess.move({from: puzzle.moves[halfMoveNum + 1].slice(0, 2), to: puzzle.moves[halfMoveNum + 1].slice(2, 4)});
                     }
+                    addNotationMove(move.san, move.color);
                     setHalfMoveNum(halfMoveNum + 2);
                     staticBoard();
                     clearBoard();
@@ -169,7 +189,7 @@ function Puzzles() {
         else if(suggestingPromotion){
             dispatch(makeMove(puzzle.userMove + suggestingPromotion.toLowerCase()));
             setSuggestingPromotion(null);
-            const emptySpace = document.getElementById("promotion-info");
+            const emptySpace = document.getElementById("promotion-info-puzzles");
             emptySpace.innerHTML = "";
         }
         else if(puzzle.promotionMade){
@@ -241,6 +261,7 @@ function Puzzles() {
             setMistake(false);
             setSuccess(false);
             setSuggestingPromotion(null);
+            setMoves([]);
         }
     }, [dispatch]);
 
@@ -288,12 +309,41 @@ function Puzzles() {
                     <p id="about-button">Натисніть на кнопку знизу, щоб розпочати</p>
                 </div>
                 <div id="chess-board"></div>
+                <div id="notation-puzzles">
+                    <div className="notation-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>№</th>
+                                    <th>Білі</th>
+                                    <th>Чорні</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {moves.map((move, index) => {
+                                const isFirstMove = index === 0;
+                                const whiteMove = move.white || (isFirstMove && move.black ? '...' : '');
+                                const blackMove = move.black || '';
+
+                                return (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{whiteMove}</td>
+                                        <td>{blackMove}</td>
+                                    </tr>
+                                );
+                            })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <div id="promotion-info"></div>
             </div>
             <div className="some-space"></div>
             <button type="button" id="get-puzzle" onClick={async () => {
                 try{
                     dispatch(blockNavigation());
+                    setMoves([]);
                     await getPuzzleToSolve();
                 } finally{
                     dispatch(unblockNavigation());

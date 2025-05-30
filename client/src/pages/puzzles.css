@@ -3,7 +3,7 @@
 }
 #center-page{
     display: grid;
-    grid-template-columns: 1fr auto 25px 1fr;
+    grid-template-columns: 375px auto 20px 1fr 10px 1fr;
     align-items: center;
     height: 580px;
 }
@@ -16,7 +16,7 @@
 }
 #promotion-info {
     display: grid;
-    grid-column: 4;
+    grid-column: 6;
     background-color: lightgray;
     text-align: center;
     height: 580px;
@@ -32,8 +32,8 @@
 }
 #cancel-promotion {
     justify-self: center;
-    width: 125px;
-    height: 30px;
+    width: 120px;
+    height: 40px;
 }
 .promotion-image:hover {
     cursor: pointer;
@@ -79,4 +79,50 @@ div:has(> .possible-move):hover {
 #get-puzzle {
     display: block;
     margin: 0 auto;
+}
+
+#notation-puzzles {
+    grid-column: 4;
+    background-color: lightgray;
+    height: 580px;
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid #ccc;
+}
+.notation-table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+}
+#notation-puzzles table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px;  
+    table-layout: fixed;
+    text-align: center;
+    background-color: white;
+}
+#notation-puzzles thead {
+    background-color: #eee;
+    font-weight: bold;
+    border-bottom: 2.5px solid #666;
+}
+#notation-puzzles th, 
+#notation-puzzles td {
+    padding: 12px 8px;  
+    border: 1.5px solid #ccc;  
+    word-wrap: break-word;
+    background-color: white; 
+}
+#notation-puzzles table th:first-child,
+#notation-puzzles table td:first-child {
+  width: 20px; 
+  max-width: 20px;
+  white-space: nowrap; 
+}
+#notation-puzzles tbody tr {
+    background-color: transparent; 
+}
+#notation-puzzles tbody tr:nth-child(odd) th, 
+#notation-puzzles tbody tr:nth-child(odd) td {
+    background-color: #f9f9f9; 
 }
